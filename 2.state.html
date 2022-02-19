@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script defer src="https://unpkg.com/alpinejs@3.8.1/dist/cdn.min.js"></script>
+</head>
+<body>
+    <div>
+        <p>
+             1. local state  : x-data를 이용하여, html chunk 에 로컬 데이타를 제공한다.
+
+            <div x-data="{ open: false }">
+            이 안에서 open 에 접근할 수 있다. 
+            open 값이 변경되면, open이 사용된 어디서든지 변경이 적용된다. (react)
+                <span x-text="open"></span>
+            </div>
+         </p>
+
+         <p>
+            2. Nesting data  : 동일한 property명을 가지는 경우, child property가 우선순위를 가진다. (javascript scope와 유사)
+            <div x-data="{ open: true }">
+                <div x-data="{ label: 'Content:' }">
+                    <span x-text="label"></span>
+                    <span x-show="open" x-text="open"></span>
+                </div>
+            </div>
+        </p>
+
+        <p>
+            3. Single-element data : element에 데이타 선언하고, 바로 거기서 사용할수 있다.
+            <button x-data="{ label: 'Click Here' }" x-text="label"></button>
+        </p>
+
+        <p>
+            4.  Data-less Alpine : 데이타 필요 없고 alpine 기능만 사용하려고 할때는... 이렇게도 사용할수 있다.
+            <button x-data @click="alert('I\'ve been clicked!')">Click Me</button>
+        </p>
+       
+        <p> 5. Re-usable data 
+            <script>
+                document.addEventListener('alpine:init', () => {
+                    Alpine.data('dropdown', () => ({
+                        open: false,
+            
+                        toggle() {
+                            this.open = ! this.open
+                        }
+                    }))
+                })
+            </script>  
+
+            <div x-data="dropdown">
+                <button @click="toggle">Expand</button> 
+                <span x-show="open">Content...</span>
+            </div>
+             
+            <div x-data="dropdown">
+                <button @click="toggle">Expand</button> 
+                <span x-show="open">Some Other Content...</span>
+            </div>
+
+        </p>
+    </div>
+
+    <div>
+        2. global state  : Alpine.store()를 이용하여, page 내 어디서든지 사용할수 있도록 한다.
+                            (이후, $store() 메소드를 사용할 수 있다.)
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.store('tabs', {
+                    current: 'first',
+                
+                    items: ['first', 'second', 'third'],
+                })
+            })
+        </script>  
+
+        <div x-data>
+            <template x-for="tab in $store.tabs.items">
+                <button x-text="tab" @click="console.log(`${tab}`)">
+            </template>
+        </div> 
+        <div x-data>
+            <button @click="$store.tabs.current = 'first'">First Tab</button>
+            <button @click="$store.tabs.current = 'second'">Second Tab</button>
+            <button @click="$store.tabs.current = 'third'">Third Tab</button>
+        </div>
+       <input x-model="$store.tabs.current">
+    </div>
+    
+
+</body>
+</html>

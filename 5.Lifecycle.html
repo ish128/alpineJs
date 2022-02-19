@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> 최신 3버젼을 끌어온다.-->
+    <script defer src="https://unpkg.com/alpinejs@3.8.1/dist/cdn.min.js"></script><!-- 정확한 버젼 명시하는 것을 권고한다.-->
+</head>
+<body>
+    <ol>
+      <li>Element initialization
+        <span x-init="console.log('Im initing...Alpine 컴포넌트 초기화 할때, 실행됨.')">init</span> 
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.data('dropdown', () => ({
+                foo: false,
+                init() {
+                    // I get called before the element using this data initializes.
+                    return this.foo = true;
+                }
+            }))
+            })
+        </script>
+        <template x-data="dropdown" x-if="foo">
+            <h2 x-text="foo"></h2>
+        </template>
+      </li>
+
+      <li>After a state change ($watch)         
+        <div x-data="{ open: false, open2: false  }" x-init="$watch('open', value => console.log(value))">
+            <input x-model="open" >
+            <input x-model="open2" >
+        </div>
+      </li> 
+      <li>
+        After a state change (x-effect)         
+        <div x-data="{ open: false, open2: false }" x-effect="console.log(open + open2)">
+            <input x-model="open" >
+            <input x-model="open2" >
+        </div>
+      </li>
+      <li>
+        Alpine initialization 
+        <ul>
+            <li>alpine:init
+                (Alpine 로드된 이후 Alpine 초기화 되기전, 호출됨.)    
+                <script>
+                    document.addEventListener('alpine:init', () => {
+                       console.log("Before init Alpine!")
+                    })
+                </script>
+            </li>
+            <li>alpine:initialized
+                (Alpine 초기화 완료된 이후, 호출됨.)
+                <script>
+                    document.addEventListener('alpine:initialized', () => {
+                       console.log("Completed Alpine!")
+                    })
+                </script>
+            </li>
+        </ul>
+
+      </li>
+    </ol>
+
+
+</body>
+</html>

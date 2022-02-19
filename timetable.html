@@ -1,0 +1,137 @@
+<html>
+<head>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        function getData(){
+            return {
+                currentSelectedSubject: null,
+                dayOfWeekList: [{value:'1', text: '월'}, {value:'2', text: '화'}, {value:'3', text: '수'}, 
+                            {value:'4', text: '목'}, {value:'5', text: '금'}],
+                periodList: [{value:'1', text: '1교시'}, 
+                            {value:'2', text: '2교시'}, 
+                            {value:'3', text: '3교시'},
+                            {value:'4', text: '4교시'}, 
+                            {value:'5', text: '5교시'},
+                            {value:'6', text: '6교시'}],
+                userSchedule: {}, 
+                userScheduleList: [ 
+                                    {dayOfWeek:'1', periodNo: '1', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'1', periodNo: '2', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'1', periodNo: '3', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'1', periodNo: '4', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'1', periodNo: '5', subjectId: 1, subjectName: '수학'},
+
+                                    {dayOfWeek:'2', periodNo: '1', subjectId: 2, subjectName: '영어'},
+                                    {dayOfWeek:'2', periodNo: '2', subjectId: 2, subjectName: '영어'},
+                                    {dayOfWeek:'2', periodNo: '3', subjectId: 2, subjectName: '영어'},
+                                    {dayOfWeek:'2', periodNo: '4', subjectId: 2, subjectName: '영어'},
+                                    {dayOfWeek:'2', periodNo: '5', subjectId: 2, subjectName: '영어'},
+
+                                    {dayOfWeek:'3', periodNo: '1', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'3', periodNo: '2', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'3', periodNo: '3', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'3', periodNo: '4', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'3', periodNo: '5', subjectId: 1, subjectName: '수학'},
+
+                                    {dayOfWeek:'4', periodNo: '1', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'4', periodNo: '2', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'4', periodNo: '3', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'4', periodNo: '4', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'4', periodNo: '5', subjectId: 1, subjectName: '수학'},
+
+                                    {dayOfWeek:'5', periodNo: '1', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'5', periodNo: '2', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'5', periodNo: '3', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'5', periodNo: '4', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'5', periodNo: '5', subjectId: 1, subjectName: '수학'},
+                                ],
+                subjectList: [
+                 {subjectId: 1, subjectName: '수학', nationalized: true},
+                 {subjectId: 2, subjectName: '영어', nationalized: false},
+                 {subjectId: 3, subjectName: '과학', nationalized: false},
+                 {subjectId: 4, subjectName: '체육', nationalized: true},
+                 {subjectId: 5, subjectName: '음악', nationalized: false}
+                ], 
+       
+                makeSchedule: function(dayOfWeek, periodNo, subjectId, subjectName){
+                    return {dayOfWeek, periodNo, subjectId, subjectName}; 
+                },
+                makeKey: function(dayOfWeek, periodNo){
+                    return dayOfWeek + '_' + periodNo;
+                },
+                displaySubject: function(dayOfWeek, periodNo){
+                    let key = this.makeKey(dayOfWeek, periodNo);
+                    let subjectName = this.userSchedule[key].subjectName;
+                    return subjectName ? subjectName : "선택";
+                },
+                selectSubject: function(subject){
+                    this.currentSelectedSubject = subject;
+                },     
+                setSubject: function(dayOfWeek, periodNo){
+                    if(!this.currentSelectedSubject) return;
+
+                    let current = this.currentSelectedSubject;
+                    let key = this.makeKey(dayOfWeek, periodNo);
+                    let thisSchedule = this.userSchedule[key];
+                    Object.assign(thisSchedule, {subjectName: current.subjectName, 
+                                                    subjectId: current.subjectId});     
+                    this.currentSelectedSubject = null;
+                    console.log(this.userSchedule);
+                },    
+                initFunc: function(){  
+                    let _this = this; 
+                    _this.userSchedule = 
+                        _this.userScheduleList.reduce((map, s) => {
+                            let key = _this.makeKey(s.dayOfWeek, s.periodNo);
+                            map[key] = s;
+                            return map;
+                        },{}); 
+
+                    _this.dayOfWeekList.forEach((d) => {
+                        _this.periodList.forEach((p) => {
+                            let key = _this.makeKey(d.value, p.value);  
+                            if(!(key in _this.userSchedule)) { 
+                                _this.userSchedule[key] = _this.makeSchedule(d.value, p.value);
+                            } 
+                        });
+
+                    });
+                    console.log(_this.userSchedule);
+                    console.log(_this.userSchedule[_this.makeKey(1, 1)].subjectName);
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div x-data="getData()" x-init="initFunc"> 
+        <div>
+            <ul>
+                <template x-for="subject in subjectList">
+                    <li x-text="subject.subjectName" @click="selectSubject(subject)"></li>
+                </template> 
+            </ul>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <template x-for="dayOfWeek in dayOfWeekList">
+                        <th x-text="dayOfWeek.text"></th>
+                    </template> 
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="periodNo in periodList">
+                    <tr>
+                        <td x-text="periodNo.text"></td>
+                        <template x-for="dayOfWeek in dayOfWeekList"> 
+                            <td x-text="displaySubject(dayOfWeek.value, periodNo.value)" @click="setSubject(dayOfWeek.value, periodNo.value)"></td>
+                        </template>
+                    </tr>
+                </template>  
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> 최신 3버젼을 끌어온다.-->
+    <script defer src="https://unpkg.com/alpinejs@3.8.1/dist/cdn.min.js"></script><!-- 정확한 버젼 명시하는 것을 권고한다.-->
+</head>
+<body>
+    <p>directives for manipulating the DOM</p>
+    <p>
+        1. Text content (x-text) 
+        <div x-data="{ title: 'Start Here' }">
+            <h1 x-text="title"></h1>
+        </div> 
+
+        1+2 = <span x-data x-text="1+2"></span>
+    </p>
+
+    <p>2. Toggling elements (x-if or x-show)
+        <ul>
+            <li>x-if (in only template tag): 상황에 따라 dom 에서 해당 emelent를 추가 하거나 제거한다.
+               (template tag 에 적용되는 directives 이다.) 
+                <div x-data="{ open: false }">
+                    <button @click="open = ! open">Expand</button>
+                    <template x-if="open">
+                        <div>
+                            Content...
+                        </div>
+                    </template>
+                </div>
+            </li>
+            <li>x-show : add css property "display: none;" to that element.
+                <div x-data="{ open: false }">
+                    <button @click="open = !open">Expand</button> 
+                    <div x-show="open">
+                        Content...
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </p>
+    <p>3. Toggling with transitions (x-transition) <br>
+        (x-transition only works with x-show, not with x-if.)
+
+        <ul>
+            <li> default transition 이 적용된다.<br>
+                x-transition by itself will apply sensible default transitions (fade and scale) to the toggle.
+                <div x-data="{ open: false }">
+                    <button @click="open = ! open">Expands</button> 
+                    <div x-show="open" x-transition>
+                        Content...
+                    </div>
+                </div>
+            </li>  
+        </ul>
+        
+        <span>transition을 커스터마이징 하는 2가지 방법</span>
+        <ol>
+            <li>Transition helpers 
+                <ul> 
+                    <li>
+                        <div x-data="{ open: false }">
+                            <button @click="open = ! open">Expands</button> 
+                            <div x-show="open" x-transition.duration.500ms>
+                                Content...
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div x-data="{ open: false }">
+                            <button @click="open = ! open">Expands</button> 
+                            <div
+                                x-show="open"
+                                x-transition:enter.duration.500ms
+                                x-transition:leave.duration.1000ms
+                            >  Content...
+                             </div>
+                    </li>
+                </ul> 
+            </li>
+            <li> Transition classes
+                <div x-data="{ open: false }">
+                    <button @click="open = ! open">Expands</button> 
+                    <div
+                    x-show="open"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-90"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-90"
+                >  Content...
+                </div> 
+            </li>
+        </ol> 
+    </p>
+
+    <p> 3. Binding attributes (x-bind) <br>
+        x-bind를 이용해서, html attribute를 추가/삭제 할 수 있다. <br>
+        HTML attributes like class, style, disabled
+        <style> 
+            .bg-red {background-color: red;}
+        </style>
+        <button
+            x-data="{ red: false }"
+            x-bind:class="red ? 'bg-red' : ''"
+            @click="red = ! red"
+        >
+            Toggle Red
+        </button>
+        <br>
+        x-bind은 생략할 수 있다. (:class)
+        <button
+            x-data="{ red: false }"
+            :class="red ? 'bg-red' : ''"
+            @click="red = ! red"
+        >
+            Toggle Red
+        </button>
+    </p>
+
+    <p>
+        4. Looping elements (x-for in only template tag)
+        (template tag 에 적용되는 directives 이다.) 
+        <div x-data="{ statuses: ['open', 'closed', 'archived'] }">
+            <template x-for="status in statuses">
+                <div x-text="status"></div>
+            </template>
+        </div> 
+    </p>
+
+    <p> 5. Inner HTML (x-html) <Br>
+        사용자가 입력하는 데이타로 x-html 사용하면 안된다! (보안) 
+        <div x-data="{ title: '<h1>Inner HTML (x-html)</h1>' }">
+            <div x-html="title"></div>
+            <input x-model="title">
+        </div>
+    </p>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> 최신 3버젼을 끌어온다.-->
+    <script defer src="https://unpkg.com/alpinejs@3.8.1/dist/cdn.min.js"></script><!-- 정확한 버젼 명시하는 것을 권고한다.-->
+</head>
+<body>
+  <p>Alpine makes it simple to listen for browser events and react to them. (using x-on)</p>
+  <ol>
+      <li>Listening for simple events
+        <button x-data x-on:click="console.log('clicked')"> standart syntax </button>
+        <button x-data @click="console.log('clicked')"> shorthand syntax </button>
+      </li>
+      <li>
+        Listening for specific keys<br>
+        <input x-data @keyup.enter="console.log(event.keyCode)"> enter 입력 시 반응 <br>
+        <input x-data @keyup.shift.enter="console.log(event.keyCode)"> shift 누른 상태에서 enter 입력 시 반응<br>
+      </li>
+      <li>Preventing default(prevent the default behavior of the browser event).
+        <form x-data @submit.prevent="console.log('prevent')">
+            <input type="submit" value="preventing default">    
+        </form>
+      </li>
+      <li>Accessing the event object
+        <button x-data @click="$event.target.remove()">Remove Me</button>
+      </li>
+      <li>Dispatching custom events (커스텀 이벤트 발생)
+        <div x-data  @foo="console.log('foo was dispatched')">  (alpine 컴포넌트안에서 발생한 이벤트만 받는다.) 
+            <button @click="$dispatch('foo')" >커스텀 이벤트 발생기</button>
+        </div>
+        <div x-data  @foo="console.log('foo2 was dispatched')">  (alpine 컴포넌트밖이라서 이 이벤트 핸들러는 실행안됨)
+        </div>
+      </li>
+      <li>
+        Listening for events on window<br>
+        event bubble 특성을 사용해서, 컴포넌트간 이벤트를 서로 공유할수 있게 한다.
+        <div x-data>
+            <button @click="$dispatch('bar')">bar 이벤트 발생기</button>
+        </div> 
+        <div x-data @bar.window="console.log('bar was dispatched')">
+            다른 컴포넌트에서 bar이벤트를 인식할수 있다.
+        </div>
+      </li>
+  </ol>
+
+</body>
+</html>
