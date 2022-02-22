@@ -4,6 +4,7 @@
     <script>
         function getData(){
             return {
+                keyList:{},
                 currentSelectedSubject: null,
                 dayOfWeekList: [{value:'1', text: '월'}, {value:'2', text: '화'}, {value:'3', text: '수'}, 
                             {value:'4', text: '목'}, {value:'5', text: '금'}],
@@ -87,74 +88,45 @@
                 makeSchedule: function(dayOfWeek, periodNo, subjectId, subjectName){
                     return {dayOfWeek, periodNo, subjectId, subjectName}; 
                 },
-                makeKey: function(dayOfWeek, periodNo){
-                    return dayOfWeek + '_' + periodNo;
+                makeKey: function(v1, v2){
+                    return v1 + '_' + v2;
                 },
-                displaySubject: function(schedule){ 
-                    console.log("schedule", schedule);
-                    let subjectName = schedule.subjectName;
+                displaySubject: function(key){  
+                    let subjectName = this.userSchedule[key].subjectName; 
                     return subjectName ? subjectName : "선택";
                 },
                 selectSubject: function(subject){
                     this.currentSelectedSubject = subject;
                 },     
-                setSubject: function(schedule){
+                setSubject: function(key){
                     if(!this.currentSelectedSubject) return; 
                     let current = this.currentSelectedSubject;  
-                    Object.assign(schedule, {subjectName: current.subjectName, 
+                    let value = this.userSchedule[key]; 
+                    Object.assign(value, {subjectName: current.subjectName, 
                                                     subjectId: current.subjectId});    
+                    
                 },    
-                getList: function(periodNo){
-                    let _this = this;  
-                    let result = Object.values(_this.userSchedule)
-                    .filter(o => o.periodNo == periodNo)
-                    .sort((a,b)=>Number(a.dayOfWeek) - Number(b.dayOfWeek));
 
-                    console.log(_this.userSchedule);
-                    console.log(_this.userScheduleList);
-                    console.log(_this.userScheduleList2);
-                    return result;
-                },
-                test: function(){  
-                    let _this = this;  
-                    _this.userSchedule = 
-                        _this.userScheduleList2.reduce((map, s) => {
-                            let key = _this.makeKey(s.dayOfWeek, s.periodNo);
-                            map[key] = s;
-                            return map;
-                        },{}); 
-                    _this.dayOfWeekList.forEach((d) => {
-                        _this.periodList.forEach((p) => {
-                            let key = _this.makeKey(d.value, p.value);  
-                            if(!(key in _this.userSchedule)) { 
-                                _this.userSchedule[key] = _this.makeSchedule(d.value, p.value);
-                            } 
-                        });
-
-                    });
-                },
                 initFunc: function(){  
                     let _this = this; 
-                    
                     _this.userSchedule = 
-                        _this.userScheduleList.reduce((map, s) => {
+                    _this.userScheduleList.reduce((map, s) => {
                             let key = _this.makeKey(s.dayOfWeek, s.periodNo);
                             map[key] = s;
                             return map;
-                        },{}); 
-
-                    _this.dayOfWeekList.forEach((d) => {
-                        _this.periodList.forEach((p) => {
+                        },{});
+                    _this.periodList.forEach((p) => {  
+                        let pKey = _this.makeKey('p', p.value);
+                        _this.keyList[pKey] = [];
+                        _this.dayOfWeekList.forEach((d) => {
                             let key = _this.makeKey(d.value, p.value);  
+                            _this.keyList[pKey].push(key);
                             if(!(key in _this.userSchedule)) { 
                                 _this.userSchedule[key] = _this.makeSchedule(d.value, p.value);
                             } 
-                        });
-
+                        }); 
                     });
                 }
-
-
             }
         }
     </script>
@@ -181,16 +153,13 @@
                 <template x-for="periodNo in periodList">
                     <tr>
                         <td x-text="periodNo.text"></td>
-                        <template x-for="schedule in getList(periodNo.value)" 
-                            :key="makeKey(schedule.dayOfWeek, schedule.periodNo)"> 
-                            <td x-text="displaySubject(schedule)" @click="setSubject(schedule)"></td>
+                        <template x-for="key in keyList[makeKey('p' , periodNo.value)]" :key="key"> 
+                            <td x-text="displaySubject(key)" @click="setSubject(key)"></td>
                         </template>
                     </tr>
                 </template>  
             </tbody>
-        </table>
-
-        <button @click="test">ttt</button>
+        </table> 
     </div>
 </body>
 </!DICThtml>
