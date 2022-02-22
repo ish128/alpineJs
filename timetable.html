@@ -1,4 +1,4 @@
-<html>
+<!DOCTYPE html>
 <head>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
@@ -45,6 +45,37 @@
                                     {dayOfWeek:'5', periodNo: '4', subjectId: 1, subjectName: '수학'},
                                     {dayOfWeek:'5', periodNo: '5', subjectId: 1, subjectName: '수학'},
                                 ],
+                                userScheduleList2: [ 
+                                    {dayOfWeek:'1', periodNo: '1', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'1', periodNo: '2', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'1', periodNo: '3', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'1', periodNo: '4', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'1', periodNo: '5', subjectId: 1, subjectName: '수학'},
+
+                                    {dayOfWeek:'2', periodNo: '1', subjectId: 2, subjectName: '영어'},
+                                    {dayOfWeek:'2', periodNo: '2', subjectId: 2, subjectName: '영어'},
+                                    {dayOfWeek:'2', periodNo: '3', subjectId: 2, subjectName: '영어'},
+                                    {dayOfWeek:'2', periodNo: '4', subjectId: 2, subjectName: '영어'},
+                                    {dayOfWeek:'2', periodNo: '5', subjectId: 2, subjectName: '영어'},
+
+                                    {dayOfWeek:'3', periodNo: '1', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'3', periodNo: '2', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'3', periodNo: '3', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'3', periodNo: '4', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'3', periodNo: '5', subjectId: 1, subjectName: '수학'},
+
+                                    {dayOfWeek:'4', periodNo: '1', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'4', periodNo: '2', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'4', periodNo: '3', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'4', periodNo: '4', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'4', periodNo: '5', subjectId: 1, subjectName: '수학'},
+
+                                    {dayOfWeek:'5', periodNo: '1', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'5', periodNo: '2', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'5', periodNo: '3', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'5', periodNo: '4', subjectId: 1, subjectName: '수학'},
+                                    {dayOfWeek:'5', periodNo: '5', subjectId: 1, subjectName: '수학'},
+                                ],
                 subjectList: [
                  {subjectId: 1, subjectName: '수학', nationalized: true},
                  {subjectId: 2, subjectName: '영어', nationalized: false},
@@ -59,27 +90,52 @@
                 makeKey: function(dayOfWeek, periodNo){
                     return dayOfWeek + '_' + periodNo;
                 },
-                displaySubject: function(dayOfWeek, periodNo){
-                    let key = this.makeKey(dayOfWeek, periodNo);
-                    let subjectName = this.userSchedule[key].subjectName;
+                displaySubject: function(schedule){ 
+                    console.log("schedule", schedule);
+                    let subjectName = schedule.subjectName;
                     return subjectName ? subjectName : "선택";
                 },
                 selectSubject: function(subject){
                     this.currentSelectedSubject = subject;
                 },     
-                setSubject: function(dayOfWeek, periodNo){
-                    if(!this.currentSelectedSubject) return;
-
-                    let current = this.currentSelectedSubject;
-                    let key = this.makeKey(dayOfWeek, periodNo);
-                    let thisSchedule = this.userSchedule[key];
-                    Object.assign(thisSchedule, {subjectName: current.subjectName, 
-                                                    subjectId: current.subjectId});     
-                    this.currentSelectedSubject = null;
-                    console.log(this.userSchedule);
+                setSubject: function(schedule){
+                    if(!this.currentSelectedSubject) return; 
+                    let current = this.currentSelectedSubject;  
+                    Object.assign(schedule, {subjectName: current.subjectName, 
+                                                    subjectId: current.subjectId});    
                 },    
+                getList: function(periodNo){
+                    let _this = this;  
+                    let result = Object.values(_this.userSchedule)
+                    .filter(o => o.periodNo == periodNo)
+                    .sort((a,b)=>Number(a.dayOfWeek) - Number(b.dayOfWeek));
+
+                    console.log(_this.userSchedule);
+                    console.log(_this.userScheduleList);
+                    console.log(_this.userScheduleList2);
+                    return result;
+                },
+                test: function(){  
+                    let _this = this;  
+                    _this.userSchedule = 
+                        _this.userScheduleList2.reduce((map, s) => {
+                            let key = _this.makeKey(s.dayOfWeek, s.periodNo);
+                            map[key] = s;
+                            return map;
+                        },{}); 
+                    _this.dayOfWeekList.forEach((d) => {
+                        _this.periodList.forEach((p) => {
+                            let key = _this.makeKey(d.value, p.value);  
+                            if(!(key in _this.userSchedule)) { 
+                                _this.userSchedule[key] = _this.makeSchedule(d.value, p.value);
+                            } 
+                        });
+
+                    });
+                },
                 initFunc: function(){  
                     let _this = this; 
+                    
                     _this.userSchedule = 
                         _this.userScheduleList.reduce((map, s) => {
                             let key = _this.makeKey(s.dayOfWeek, s.periodNo);
@@ -96,9 +152,9 @@
                         });
 
                     });
-                    console.log(_this.userSchedule);
-                    console.log(_this.userSchedule[_this.makeKey(1, 1)].subjectName);
                 }
+
+
             }
         }
     </script>
@@ -125,13 +181,16 @@
                 <template x-for="periodNo in periodList">
                     <tr>
                         <td x-text="periodNo.text"></td>
-                        <template x-for="dayOfWeek in dayOfWeekList"> 
-                            <td x-text="displaySubject(dayOfWeek.value, periodNo.value)" @click="setSubject(dayOfWeek.value, periodNo.value)"></td>
+                        <template x-for="schedule in getList(periodNo.value)" 
+                            :key="makeKey(schedule.dayOfWeek, schedule.periodNo)"> 
+                            <td x-text="displaySubject(schedule)" @click="setSubject(schedule)"></td>
                         </template>
                     </tr>
                 </template>  
             </tbody>
         </table>
+
+        <button @click="test">ttt</button>
     </div>
 </body>
-</html>
+</!DICThtml>
