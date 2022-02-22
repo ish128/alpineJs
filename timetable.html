@@ -106,7 +106,23 @@
                                                     subjectId: current.subjectId});    
                     
                 },    
-
+                clearAll: function(){
+                    let _this = this; 
+                    _this.userSchedule = 
+                    [].reduce((map, s) => {
+                            let key = _this.makeKey(s.dayOfWeek, s.periodNo);
+                            map[key] = s;
+                            return map;
+                        },{});
+                    _this.periodList.forEach((p) => {   
+                        _this.dayOfWeekList.forEach((d) => {
+                            let key = _this.makeKey(d.value, p.value);   
+                            if(!(key in _this.userSchedule)) { 
+                                _this.userSchedule[key] = _this.makeSchedule(d.value, p.value);
+                            } 
+                        }); 
+                    });
+                },
                 initFunc: function(){  
                     let _this = this; 
                     _this.userSchedule = 
@@ -159,7 +175,9 @@
                     </tr>
                 </template>  
             </tbody>
-        </table> 
+        </table>
+
+        <button @click="clearAll">ttt</button>
     </div>
 </body>
 </!DICThtml>
